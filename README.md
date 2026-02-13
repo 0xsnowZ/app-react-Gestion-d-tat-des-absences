@@ -17,57 +17,82 @@ If you are developing a production application, we recommend updating the config
 
 ```js
 export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+  # Absence React App
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+  A small React + TypeScript + Vite application to manage absences and trainees (stagiaires).
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+  ## Features
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+  - Add and list absences
+  - Manage stagiaires (add/list)
+  - Simple UI components using a local `ui/` component set
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+  ## Tech stack
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+  - React
+  - TypeScript
+  - Vite
+  - Tailwind CSS
+
+  ## Project structure
+
+  - `src/` — application source
+    - `components/` — app components (`AbsenceForm`, `AbsenceList`, `StagiaireForm`, `StagiaireList`, `Consultations`, `Navigation`)
+    - `components/ui/` — reusable UI primitives
+    - `hooks/` — custom hooks
+    - `lib/` — utility functions
+    - `services/` — data service layer
+    - `types/` — TypeScript types
+
+  ## Setup
+
+  1. Install dependencies
+
+  ```bash
+  cd "app"
+  npm install
+  ```
+
+  2. Run development server
+
+  ```bash
+  npm run dev
+  ```
+
+  3. Build for production
+
+  ```bash
+  npm run build
+  ```
+
+  4. Preview production build
+
+  ```bash
+  npm run preview
+  ```
+
+  ## Environment
+
+  - Environment variables (if used) should be placed in a `.env` file at the project root. Sensitive values must not be committed — `.gitignore` already excludes `.env` files.
+
+  ## Contributing
+
+  - Create an issue for a new feature or bug.
+  - Open a pull request with a clear description of changes.
+
+  ## Committing and pushing
+
+  After updating files locally, commit and push to your remote. Example commands:
+
+  ```bash
+  cd "app"
+  git add README.md
+  git commit -m "docs: improve README"
+  git push
+  ```
+
+  If you need me to commit and push this change here, tell me and provide the remote URL (if not already set).
+
+  ## License
+
+  Specify your license here (e.g. MIT) or remove this section if not applicable.
