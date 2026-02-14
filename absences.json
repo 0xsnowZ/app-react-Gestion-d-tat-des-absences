@@ -1,5 +1,0 @@
-{ "absences": [
-  { "id": 1, "idstag": 1, "date": "10/10/2025", "justifie": true },
-  { "id": 2, "idstag": 1, "date": "19/10/2025", "justifie": false },
-  { "id": 3, "idstag": 2, "date": "20/11/2025", "justifie": true }
-]}

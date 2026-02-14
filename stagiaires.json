@@ -1,5 +1,0 @@
-{ "stagiaires": [
-  { "id": 1, "nom": "Tahiri", "filiere": "DD101", "sexe": "m" },
-  { "id": 2, "nom": "Mouhid", "filiere": "DD102", "sexe": "f" },
-  { "id": 3, "nom": "Errami", "filiere": "DD201", "sexe": "m" }
-]}
