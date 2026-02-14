@@ -1,0 +1,38 @@
+{
+  "stagiaires": [
+    {
+      "id": 2,
+      "nom": "Mouhid",
+      "filiere": "DD102",
+      "sexe": "f"
+    },
+    {
+      "id": 3,
+      "nom": "Errami",
+      "filiere": "DD201",
+      "sexe": "m"
+    },
+    {
+      "nom": "Ahmed ",
+      "filiere": "DD201",
+      "sexe": "m",
+      "id": 4
+    }
+  ],
+  "absences": [
+    {
+      "id": 3,
+      "idstag": 2,
+      "date": "2025-11-20",
+      "justifie": true,
+      "nbHeures": 3
+    },
+    {
+      "idstag": 4,
+      "date": "2026-02-14",
+      "justifie": false,
+      "nbHeures": 8,
+      "id": 4
+    }
+  ]
+}

@@ -17,59 +17,62 @@ function App() {
   const [editingStagiaire, setEditingStagiaire] = useState<Stagiaire | null>(null);
   const [editingAbsence, setEditingAbsence] = useState<Absence | null>(null);
 
+  // Rafraîchir les données
+  const refreshData = useCallback(async () => {
+    const [s, a] = await Promise.all([
+      dataService.getStagiaires(),
+      dataService.getAbsences(),
+    ]);
+    setStagiaires(s);
+    setAbsences(a);
+  }, []);
+
   // Charger les données au démarrage
   useEffect(() => {
-    setStagiaires(dataService.getStagiaires());
-    setAbsences(dataService.getAbsences());
-  }, []);
-
-  // Rafraîchir les données
-  const refreshData = useCallback(() => {
-    setStagiaires(dataService.getStagiaires());
-    setAbsences(dataService.getAbsences());
-  }, []);
+    refreshData();
+  }, [refreshData]);
 
   // Stagiaires - CRUD
-  const handleAddStagiaire = (stagiaire: Omit<Stagiaire, 'id'>) => {
-    dataService.addStagiaire(stagiaire);
-    refreshData();
+  const handleAddStagiaire = async (stagiaire: Omit<Stagiaire, 'id'>) => {
+    await dataService.addStagiaire(stagiaire);
+    await refreshData();
     toast.success('Stagiaire ajouté avec succès');
   };
 
-  const handleUpdateStagiaire = (stagiaire: Omit<Stagiaire, 'id'>) => {
+  const handleUpdateStagiaire = async (stagiaire: Omit<Stagiaire, 'id'>) => {
     if (editingStagiaire) {
-      dataService.updateStagiaire({ ...stagiaire, id: editingStagiaire.id });
+      await dataService.updateStagiaire({ ...stagiaire, id: editingStagiaire.id });
       setEditingStagiaire(null);
-      refreshData();
+      await refreshData();
       toast.success('Stagiaire modifié avec succès');
     }
   };
 
-  const handleDeleteStagiaire = (id: number) => {
-    dataService.deleteStagiaire(id);
-    refreshData();
+  const handleDeleteStagiaire = async (id: number) => {
+    await dataService.deleteStagiaire(id);
+    await refreshData();
     toast.success('Stagiaire supprimé avec succès');
   };
 
   // Absences - CRUD
-  const handleAddAbsence = (absence: Omit<Absence, 'id'>) => {
-    dataService.addAbsence(absence);
-    refreshData();
+  const handleAddAbsence = async (absence: Omit<Absence, 'id'>) => {
+    await dataService.addAbsence(absence);
+    await refreshData();
     toast.success('Absence ajoutée avec succès');
   };
 
-  const handleUpdateAbsence = (absence: Omit<Absence, 'id'>) => {
+  const handleUpdateAbsence = async (absence: Omit<Absence, 'id'>) => {
     if (editingAbsence) {
-      dataService.updateAbsence({ ...absence, id: editingAbsence.id });
+      await dataService.updateAbsence({ ...absence, id: editingAbsence.id });
       setEditingAbsence(null);
-      refreshData();
+      await refreshData();
       toast.success('Absence modifiée avec succès');
     }
   };
 
-  const handleDeleteAbsence = (id: number) => {
-    dataService.deleteAbsence(id);
-    refreshData();
+  const handleDeleteAbsence = async (id: number) => {
+    await dataService.deleteAbsence(id);
+    await refreshData();
     toast.success('Absence supprimée avec succès');
   };
 

@@ -1,135 +1,114 @@
 import type { Stagiaire, Absence } from '@/types';
 
-const STAGIAIRES_KEY = 'stagiaires';
-const ABSENCES_KEY = 'absences';
-
-// Données initiales
-const defaultStagiaires: Stagiaire[] = [
-  { id: 1, nom: 'Tahiri', filiere: 'DD101', sexe: 'm' },
-  { id: 2, nom: 'Mouhid', filiere: 'DD102', sexe: 'f' },
-  { id: 3, nom: 'Errami', filiere: 'DD201', sexe: 'm' },
-];
-
-const defaultAbsences: Absence[] = [
-  { id: 1, idstag: 1, date: '2025-10-10', justifie: true, nbHeures: 4 },
-  { id: 2, idstag: 1, date: '2025-10-19', justifie: false, nbHeures: 2 },
-  { id: 3, idstag: 2, date: '2025-11-20', justifie: true, nbHeures: 3 },
-];
+const API_URL = 'http://localhost:3001';
 
 export const dataService = {
   // Stagiaires
-  getStagiaires(): Stagiaire[] {
-    const data = localStorage.getItem(STAGIAIRES_KEY);
-    if (!data) {
-      localStorage.setItem(STAGIAIRES_KEY, JSON.stringify(defaultStagiaires));
-      return defaultStagiaires;
-    }
-    return JSON.parse(data);
+  async getStagiaires(): Promise<Stagiaire[]> {
+    const res = await fetch(`${API_URL}/stagiaires`);
+    return res.json();
   },
 
-  saveStagiaires(stagiaires: Stagiaire[]): void {
-    localStorage.setItem(STAGIAIRES_KEY, JSON.stringify(stagiaires));
+  async addStagiaire(stagiaire: Omit<Stagiaire, 'id'>): Promise<Stagiaire> {
+    const res = await fetch(`${API_URL}/stagiaires`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(stagiaire),
+    });
+    return res.json();
   },
 
-  addStagiaire(stagiaire: Omit<Stagiaire, 'id'>): Stagiaire {
-    const stagiaires = this.getStagiaires();
-    const newId = stagiaires.length > 0 ? Math.max(...stagiaires.map(s => s.id)) + 1 : 1;
-    const newStagiaire = { ...stagiaire, id: newId };
-    stagiaires.push(newStagiaire);
-    this.saveStagiaires(stagiaires);
-    return newStagiaire;
+  async updateStagiaire(stagiaire: Stagiaire): Promise<Stagiaire> {
+    const res = await fetch(`${API_URL}/stagiaires/${stagiaire.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(stagiaire),
+    });
+    return res.json();
   },
 
-  updateStagiaire(stagiaire: Stagiaire): void {
-    const stagiaires = this.getStagiaires();
-    const index = stagiaires.findIndex(s => s.id === stagiaire.id);
-    if (index !== -1) {
-      stagiaires[index] = stagiaire;
-      this.saveStagiaires(stagiaires);
-    }
-  },
-
-  deleteStagiaire(id: number): void {
-    const stagiaires = this.getStagiaires().filter(s => s.id !== id);
-    this.saveStagiaires(stagiaires);
+  async deleteStagiaire(id: number): Promise<void> {
+    // Supprimer le stagiaire
+    await fetch(`${API_URL}/stagiaires/${id}`, { method: 'DELETE' });
     // Supprimer aussi les absences associées
-    const absences = this.getAbsences().filter(a => a.idstag !== id);
-    this.saveAbsences(absences);
+    const absences = await this.getAbsences();
+    const toDelete = absences.filter(a => a.idstag === id);
+    await Promise.all(
+      toDelete.map(a => fetch(`${API_URL}/absences/${a.id}`, { method: 'DELETE' }))
+    );
   },
 
-  getStagiaireById(id: number): Stagiaire | undefined {
-    return this.getStagiaires().find(s => s.id === id);
+  async getStagiaireById(id: number): Promise<Stagiaire | undefined> {
+    const res = await fetch(`${API_URL}/stagiaires/${id}`);
+    if (!res.ok) return undefined;
+    return res.json();
   },
 
   // Absences
-  getAbsences(): Absence[] {
-    const data = localStorage.getItem(ABSENCES_KEY);
-    if (!data) {
-      localStorage.setItem(ABSENCES_KEY, JSON.stringify(defaultAbsences));
-      return defaultAbsences;
-    }
-    return JSON.parse(data);
+  async getAbsences(): Promise<Absence[]> {
+    const res = await fetch(`${API_URL}/absences`);
+    return res.json();
   },
 
-  saveAbsences(absences: Absence[]): void {
-    localStorage.setItem(ABSENCES_KEY, JSON.stringify(absences));
+  async addAbsence(absence: Omit<Absence, 'id'>): Promise<Absence> {
+    const res = await fetch(`${API_URL}/absences`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(absence),
+    });
+    return res.json();
   },
 
-  addAbsence(absence: Omit<Absence, 'id'>): Absence {
-    const absences = this.getAbsences();
-    const newId = absences.length > 0 ? Math.max(...absences.map(a => a.id)) + 1 : 1;
-    const newAbsence = { ...absence, id: newId };
-    absences.push(newAbsence);
-    this.saveAbsences(absences);
-    return newAbsence;
+  async updateAbsence(absence: Absence): Promise<Absence> {
+    const res = await fetch(`${API_URL}/absences/${absence.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(absence),
+    });
+    return res.json();
   },
 
-  updateAbsence(absence: Absence): void {
-    const absences = this.getAbsences();
-    const index = absences.findIndex(a => a.id === absence.id);
-    if (index !== -1) {
-      absences[index] = absence;
-      this.saveAbsences(absences);
-    }
+  async deleteAbsence(id: number): Promise<void> {
+    await fetch(`${API_URL}/absences/${id}`, { method: 'DELETE' });
   },
 
-  deleteAbsence(id: number): void {
-    const absences = this.getAbsences().filter(a => a.id !== id);
-    this.saveAbsences(absences);
-  },
-
-  getAbsenceById(id: number): Absence | undefined {
-    return this.getAbsences().find(a => a.id === id);
+  async getAbsenceById(id: number): Promise<Absence | undefined> {
+    const res = await fetch(`${API_URL}/absences/${id}`);
+    if (!res.ok) return undefined;
+    return res.json();
   },
 
   // Consultations
-  getAbsencesByStagiaire(idstag: number): Absence[] {
-    return this.getAbsences().filter(a => a.idstag === idstag);
+  async getAbsencesByStagiaire(idstag: number): Promise<Absence[]> {
+    const res = await fetch(`${API_URL}/absences?idstag=${idstag}`);
+    return res.json();
   },
 
-  getAbsencesByJustification(justifie: 'all' | 'justifie' | 'non-justifie'): Absence[] {
-    const absences = this.getAbsences();
-    if (justifie === 'all') return absences;
-    if (justifie === 'justifie') return absences.filter(a => a.justifie);
-    return absences.filter(a => !a.justifie);
+  async getAbsencesByJustification(justifie: 'all' | 'justifie' | 'non-justifie'): Promise<Absence[]> {
+    if (justifie === 'all') return this.getAbsences();
+    const val = justifie === 'justifie';
+    const res = await fetch(`${API_URL}/absences?justifie=${val}`);
+    return res.json();
   },
 
-  getAbsencesByDate(date: string): Absence[] {
-    return this.getAbsences().filter(a => a.date === date);
+  async getAbsencesByDate(date: string): Promise<Absence[]> {
+    const res = await fetch(`${API_URL}/absences?date=${date}`);
+    return res.json();
   },
 
-  getAbsencesByPeriode(dateDebut: string, dateFin: string): Absence[] {
-    return this.getAbsences().filter(a => a.date >= dateDebut && a.date <= dateFin);
+  async getAbsencesByPeriode(dateDebut: string, dateFin: string): Promise<Absence[]> {
+    const res = await fetch(`${API_URL}/absences?date_gte=${dateDebut}&date_lte=${dateFin}`);
+    return res.json();
   },
 
-  getRecapitulatifAbsences(): {
+  async getRecapitulatifAbsences(): Promise<{
     totalHeures: number;
     totalJustifiees: number;
     totalNonJustifiees: number;
     heuresJustifiees: number;
     heuresNonJustifiees: number;
-  } {
-    const absences = this.getAbsences();
+  }> {
+    const absences = await this.getAbsences();
     const justifiees = absences.filter(a => a.justifie);
     const nonJustifiees = absences.filter(a => !a.justifie);
 
